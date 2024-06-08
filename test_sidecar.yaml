@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ziti-tunnel-sidecar-demo
+  namespace: external-secrets
 spec:
   replicas: 1
   selector:
@@ -17,25 +18,16 @@ spec:
       containers:
         - image: alpine:3.12.2
           name: testclient
-          command:
-            - sh
-            - -c
-            - |
-              apk add --no-cache postgresql-client
-              while true; do
-                echo "Attempting to connect to PostgreSQL at postgres.ziti.internal..."
-                PGPASSWORD=mypassword psql -h postgres.ziti.internal -U myuser -d mydb -c "SELECT NOW();" && echo "Connection successful" || echo "Connection failed"
-                sleep 10
-              done
+          command: ["sh", "-c", "apk add --no-cache curl && curl -s http://vault1.ziti.internal:8203 && echo 'Connection successful' || echo 'Connection failed'"]
 
         - image: openziti/ziti-tunnel
           name: ziti-tunnel
           args: ["tproxy"]
           env:
           - name: ZITI_IDENTITY_BASENAME
-            value: hello-client13  
+            value: vault-client2  
           volumeMounts:
-          - name: hello-client13
+          - name: vault-client2
             mountPath: /netfoundry
             readOnly: true
           securityContext:
@@ -49,12 +41,14 @@ spec:
           - 172.20.0.10  # change to CoreDNS cluster service address
       restartPolicy: Always
       volumes:
-      - name: hello-client13
+      - name: vault-client2
         secret:
-          secretName: hello-client13
+          secretName: vault-client2
 
 
-# ziti edge enroll hello-client13.jwt
+# ziti edge enroll vault-client2.jwt
 
-# kubectl create secret generic "hello-client13" \
-#     --from-file=hello-client13.json          
+# kubectl -n external-secrets create secret generic "vault-client2" \
+#     --from-file=vault-client2.json          
+
+

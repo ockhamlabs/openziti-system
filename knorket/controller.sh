@@ -30,9 +30,7 @@ helm upgrade --install "ziti-controller" openziti/ziti-controller \
 --set cert-manager.enabled=true
 
 
-export pass=$(kubectl get secrets "ziti-controller-admin-secret" \
---namespace "ziti" \
---output go-template='{{index .data "admin-password" | base64decode }}') 
+export pass=2tkpM1Pf2frVu7QMRuI7C5qr5a9VT0iN
 
 ziti edge login ec2-13-60-60-200.eu-north-1.compute.amazonaws.com:1280 \
 --yes --username "admin" \
