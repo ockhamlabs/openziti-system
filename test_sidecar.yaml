@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ziti-tunnel-sidecar-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ziti-tunnel-sidecar-demo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ziti-tunnel-sidecar-demo
+    spec:
+      containers:
+        - image: alpine:3.12.2
+          name: testclient
+          command:
+            - sh
+            - -c
+            - |
+              apk add --no-cache postgresql-client
+              while true; do
+                echo "Attempting to connect to PostgreSQL at postgres.ziti.internal..."
+                PGPASSWORD=mypassword psql -h postgres.ziti.internal -U myuser -d mydb -c "SELECT NOW();" && echo "Connection successful" || echo "Connection failed"
+                sleep 10
+              done
+
+        - image: openziti/ziti-tunnel
+          name: ziti-tunnel
+          args: ["tproxy"]
+          env:
+          - name: ZITI_IDENTITY_BASENAME
+            value: hello-client13  
+          volumeMounts:
+          - name: hello-client13
+            mountPath: /netfoundry
+            readOnly: true
+          securityContext:
+            capabilities:
+              add:
+              - NET_ADMIN
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 127.0.0.1   # used by the tunneler during startup to verify own DNS for the pod
+          - 172.20.0.10  # change to CoreDNS cluster service address
+      restartPolicy: Always
+      volumes:
+      - name: hello-client13
+        secret:
+          secretName: hello-client13
+
+
+# ziti edge enroll hello-client13.jwt
+
+# kubectl create secret generic "hello-client13" \
+#     --from-file=hello-client13.json          

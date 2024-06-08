@@ -1,0 +1,1 @@
+## refer charts/trino for using sidecars with trino
