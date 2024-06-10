@@ -35,3 +35,5 @@ export pass=2tkpM1Pf2frVu7QMRuI7C5qr5a9VT0iN
 ziti edge login ec2-13-60-60-200.eu-north-1.compute.amazonaws.com:1280 \
 --yes --username "admin" \
 --password $pass
+
+python3 ziti_router_auto_enroll.py --jwt router21.txt --controller=ec2-13-60-60-200.eu-north-1.compute.amazonaws.com --controllerFabricPort=6262 --force

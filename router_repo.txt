@@ -1,0 +1,35 @@
+git clone https://github.com/netfoundry/ziti_router_auto_enroll.git
+
+cd ziti_router_auto_enroll
+
+python3 ziti_router_auto_enroll.py --jwt router22.txt --controller=ec2-13-60-60-200.eu-north-1.compute.amazonaws.com --controllerFabricPort=6262 --autoTunnelListener --force
+
+ziti edge update identity "router22" \
+    --role-attributes test-hosts
+
+ziti edge create identity "test-client" \
+    --role-attributes test-clients \
+    --jwt-output-file test-client.jwt
+
+ziti edge create config "test-intercept-config" intercept.v1 \
+    '{"protocols":["tcp"],"addresses":["test.ziti.internal"], "portRanges":[{"low":80, "high":80}]}'
+
+ziti edge create config "test-host-config" host.v1 \
+    '{"protocol":"tcp", "address":"localhost","port":80}'
+
+ziti edge create service "test-service" \
+    --configs test-intercept-config,test-host-config
+
+ziti edge create edge-router-policy "default" \
+    --edge-router-roles '#all' --identity-roles '#all'
+
+ziti edge create service-edge-router-policy "default" \
+    --edge-router-roles '#all' --service-roles '#all'
+
+ziti edge create service-policy "test-dial-policy" Dial \
+    --service-roles '@test-service' --identity-roles '#test-clients'
+
+ziti edge create service-policy "test-bind-policy" Bind \
+    --service-roles '@test-service' --identity-roles '#test-hosts'
+
+ziti edge policy-advisor services test-service -q           
