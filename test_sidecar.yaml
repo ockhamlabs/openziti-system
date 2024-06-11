@@ -18,16 +18,16 @@ spec:
       containers:
         - image: alpine:3.12.2
           name: testclient
-          command: ["sh", "-c", "apk add --no-cache curl && curl -s http://vault1.ziti.internal:8203 && echo 'Connection successful' || echo 'Connection failed'"]
+          command: ["sh", "-c", "apk add --no-cache curl && curl -s hello.ziti.internal && echo 'Connection successful' || echo 'Connection failed'"]
 
         - image: openziti/ziti-tunnel
           name: ziti-tunnel
           args: ["tproxy"]
           env:
           - name: ZITI_IDENTITY_BASENAME
-            value: vault-client2  
+            value: c2-hello-client  
           volumeMounts:
-          - name: vault-client2
+          - name: c2-hello-client
             mountPath: /netfoundry
             readOnly: true
           securityContext:
@@ -38,18 +38,15 @@ spec:
       dnsConfig:
         nameservers:
           - 127.0.0.1   # used by the tunneler during startup to verify own DNS for the pod
-          - 172.20.0.10  # change to CoreDNS cluster service address
+          - 10.100.0.10  # change to CoreDNS cluster service address
       restartPolicy: Always
       volumes:
-      - name: vault-client2
+      - name: c2-hello-client
         secret:
-          secretName: vault-client2
+          secretName: c2-hello-client
 
 
-# ziti edge enroll vault-client2.jwt
-
-# kubectl -n external-secrets create secret generic "vault-client2" \
-#     --from-file=vault-client2.json          
+        
 
 
 

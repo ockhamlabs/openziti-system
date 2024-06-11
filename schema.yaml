@@ -1,0 +1,47 @@
+ziti-controller:
+  url:
+  port:
+  clients:
+    - client1:
+        routers:
+        - ref: ## give router ref
+
+## routers that are deployed
+routers:
+  - name: 
+    jwtToken: 
+    jsonToken:
+    attribute: ## ref to attribute
+
+## attributes that can be referred to 
+attributes:
+  - name: 
+    type: ##identity/service
+    services:
+      - ref: ## give reference
+    policies:
+      - policy1
+      - policy2
+
+
+## services that are created
+services:
+  - name:
+    interceptConfig:
+      name:
+      address:
+      protocols:
+        - p1
+    hostConfig:
+      name:
+      address:
+      protocols:
+        - p1   
+    dailers:
+      - client1
+      - client22
+    reachableBy:
+      - router1
+      - router2           
+
+
