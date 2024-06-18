@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ziti-tunnel-sidecar-demo
+  name: ziti-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ziti-tunnel-sidecar-demo
+      app: ziti-test
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: ziti-tunnel-sidecar-demo
+        app: ziti-test
     spec:
       containers:
         - image: alpine:3.12.2
           name: testclient
-          command: ["sh", "-c", "apk add --no-cache curl && curl -s http://vault1.ziti.internal:8203 && echo 'Connection successful' || echo 'Connection failed'"]
+          command: ["sh", "-c", "apk add --no-cache curl && curl -s http://postgres.ziti.internal && echo 'Connection successful' || echo 'Connection failed'"]
       restartPolicy: Always
 

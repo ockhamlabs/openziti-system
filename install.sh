@@ -46,10 +46,28 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
 ## install aws cli
 
-# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-# sudo apt install unzip
-# unzip awscliv2.zip
-# sudo ./aws/install
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+sudo apt install unzip
+unzip awscliv2.zip
+sudo ./aws/install
 
 curl -sS https://get.openziti.io/install.bash \
 | sudo bash -s openziti
+
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+
+eksctl utils associate-iam-oidc-provider --region=eu-north-1 --cluster=eks-private --approve
+
+eksctl create iamserviceaccount \
+  --region eu-north-1 \
+  --name ebs-csi-controller-sa \
+  --namespace kube-system \
+  --cluster pub-c \
+  --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+  --approve \
+  --role-name AmazonEKS_EBS_CSI_DriverRole-21
+
+
+eksctl create addon --name aws-ebs-csi-driver --cluster pub-c --service-account-role-arn arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/AmazonEKS_EBS_CSI_DriverRole-21 --force

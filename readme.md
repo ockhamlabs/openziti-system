@@ -1,54 +1,43 @@
 ## Setup Order
 
-### follow steps from relevant folders
+### Follow steps from the relevant folders:
 
-### controller in knorket
+1. Controller in knorket
+2. Postgres
+3. Trino cluster
+4. Then access Trino from Trino 
 
-### Postgres
+![Trino Setup](./trino_setup.png)
 
-### Trino cluster
+For the Ziti network to work, we need:
+  - Controllers
+  - Routers
+  - Tunnels
 
-### then access trino from trino 
+The controller will act as a central body.
 
+The router is deployed on the private network from where you want to expose services. If you have a VPC and then you install the router there, that means the router can reach all IPs on that VPC. To expose an application, you need to map that IP.
 
+### Here is how we would set up:
 
-![Alt text](./trino_setup.png)
+#### For Controller Installation:
+Provision a separate EC2 instance.
 
-For deploying tunnels as agent 
+- Follow `controller.sh` under knorket
+- Make note of the username and password to connect
 
-refer https://openziti.io/docs/reference/tunnelers/kubernetes/kubernetes-daemonset
+#### For Router Installation:
 
-```sh
-helm install coredns-custom k8s-nodelocaldns-helm/node-local-dns
-```
+If it is a Linux machine:
+- Follow `postgres/router.sh`
 
-```sh
-helm install ziti-edge-tunnel openziti/ziti-edge-tunnel --set-file zitiIdentity=vault1-client.json
-```
+If in Kubernetes, use the Helm chart:
+- Follow `trino-eks/router.sh`
 
-but modify the coredns related configmaps to 
+If you want to allow some service to connect via the router:
 
-```yaml
-Corefile:
-----
-.:53 {
-    errors
-    health {
-        lameduck 5s
-      }
-    ready
-    kubernetes cluster.local in-addr.arpa ip6.arpa {
-      pods insecure
-      fallthrough in-addr.arpa ip6.arpa
-    }
-    prometheus :9153
-    forward . /etc/resolv.conf
-    cache 30
-    loop
-    reload
-    loadbalance
-}
-vault1.ziti.internal:53 {
-    forward . 100.64.0.2
-} 
-```
+- Map it as done in `postgres/service.sh`
+
+#### For Tunnel Installation:
+- Via nodeagent (follow `trino-eks/tunnels.sh`)
+- Via Linux service (follow [Ziti Tunneler for Linux](https://openziti.io/docs/reference/tunnelers/linux/debian-package))

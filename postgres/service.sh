@@ -1,7 +1,4 @@
-## run this commands on eks client 
-
-ziti edge create edge-router "router10" -t -o ./router10.jwt
-
+## run this commands on ziti client so that it can connect to postgres router 
 
 ziti edge update identity "router10" \
     --role-attributes hello-hosts7

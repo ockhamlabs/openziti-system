@@ -1,4 +1,6 @@
-this in eks cluster 
+# this in eks cluster 
+
+ziti edge create edge-router "router5" -t -o ./router5.jwt
 
 helm upgrade --install "private-router" openziti/ziti-router \
 --namespace ziti \
