@@ -1,6 +1,7 @@
 ## install tunnel as nodeagent 
 
-helm install ziti-edge-tunnel openziti/ziti-edge-tunnel --set-file zitiIdentity=<client_identity.json>
+kubectl create secret generic trino-client1001 --from-file=persisted-identity=trino-client1001.json
+helm install ziti-edge-tunnel openziti/ziti-edge-tunnel --set secret.existingSecretName=trino-client1001
 
 ## modify the coredns configmap to use
 
