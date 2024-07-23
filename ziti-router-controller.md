@@ -51,7 +51,7 @@ helm upgrade --install "ziti-controller" openziti/ziti-controller \
 ziti edge create edge-router "router" -t -o ./router.jwt
 ```
 
-#### #### Note pass ctrl.endpoint is taken from advertised host and port of ctrlPlane controller in our case "${NODE_IP}:6262"
+#### Note: pass ctrl.endpoint is taken from advertised host and port of ctrlPlane controller in our case "${NODE_IP}:6262"
 
 ```sh
 helm upgrade --install "ziti-router" openziti/ziti-router \
@@ -214,7 +214,7 @@ tunnel:
 ziti edge create edge-router "router1" -t -o ./router1.jwt
 ```
 
-#### Note pass ctrl.endpoint is taken from advertised host and port of ctrlPlane controller in our case ctrl.example.co:443
+#### Note: pass ctrl.endpoint is taken from advertised host and port of ctrlPlane controller in our case ctrl.example.co:443
 
 ```sh
 helm upgrade "ziti-router" openziti/ziti-router \
