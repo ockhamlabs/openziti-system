@@ -132,7 +132,7 @@ ingress-nginx:
 
 #### We are using ingress and letting ssl passthrough so mtls can be handled by ziti controller 
 
-#### We used example.co as domain as later after seeing loadbalancer url we can add CNAME entry to new subdomain and update helm chart
+#### We used example.co as domain as later after seeing ingress url we can add CNAME entry to new subdomain and update helm chart
 
 
 
