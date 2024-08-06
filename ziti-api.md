@@ -64,6 +64,13 @@ edgeRouterId=$(echo $edgeRouterResponse | jq -r '.data.id')
 
 echo "routerID is $edgeRouterId"
 
+edgeRouterResponse=$(curl -s -X GET "$edgeRouterEndpoint" \
+  -H "Content-Type: application/json" \
+  -H "Zt-Session: $session" \
+  --insecure)
+
+enrollmentJwt=$(echo $edgeRouterResponse | jq -r '.data.enrollmentJwt')
+
 ## to update the router identity
 
 routerId=".OAbqESuQ"  # you will get this from routerResponse
@@ -76,14 +83,6 @@ updateResponse=$(curl -s -X PATCH "$ZITI_URL/edge/management/v1/identities/$rout
   -d '{
     "roleAttributes": ["'"${newRoleAttributes[@]}"'"]
   }' --insecure)
-
-
-edgeRouterResponse=$(curl -s -X GET "$edgeRouterEndpoint" \
-  -H "Content-Type: application/json" \
-  -H "Zt-Session: $session" \
-  --insecure)
-
-enrollmentJwt=$(echo $edgeRouterResponse | jq -r '.data.enrollmentJwt')
 
 
 ```
