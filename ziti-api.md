@@ -64,12 +64,28 @@ edgeRouterId=$(echo $edgeRouterResponse | jq -r '.data.id')
 
 echo "routerID is $edgeRouterId"
 
+## to update the router identity
+
+routerId=".OAbqESuQ"  # you will get this from routerResponse
+newRoleAttributes=("new-router-group")  # New role attributes to assign
+
+# Make the API request to update the edge router identity
+updateResponse=$(curl -s -X PATCH "$ZITI_URL/edge/management/v1/identities/$routerId" \
+  -H "Content-Type: application/json" \
+  -H "Zt-Session: $session" \
+  -d '{
+    "roleAttributes": ["'"${newRoleAttributes[@]}"'"]
+  }' --insecure)
+
+
 edgeRouterResponse=$(curl -s -X GET "$edgeRouterEndpoint" \
   -H "Content-Type: application/json" \
   -H "Zt-Session: $session" \
   --insecure)
 
-enrollmentJwt=$(echo $edgeRouterResponse | jq -r '.data.enrollmentJwt') 
+enrollmentJwt=$(echo $edgeRouterResponse | jq -r '.data.enrollmentJwt')
+
+
 ```
 
 ### used the above jwt for running the router and check if router is online
